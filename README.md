@@ -15,7 +15,7 @@ You can find the current GMm for the sun at https://ssd.jpl.nasa.gov/?sat_phys_p
 
 The tidal acceleration from the sun and moon is
 
-g(t) = [GMs/(Rsi^2) - GMs/(Rse^2)] + [GMm/(Rmi^2) - GMs/(Rme^2)]
+g(t) = [GMs/(Rsi^2) - GMs/(Rse^2)] + [GMm/(Rmi^2) - GMm/(Rme^2)]
 
 This looks complicated, but it is easy to remember if you say "The sun acting on the station minus the sun acting on the center of the earth.  To that you add, the moon acting on the station minus the moon acting on the center of the earth.
 
@@ -35,6 +35,18 @@ A three axis gravimeter of this sensitivity can be used as a kind of gravitation
 
 You will have to adjust the signal from the sun and moon to account for the rotation of the earth and your local centrifugal acceleration.  This depends on the rate of rotation of the earth, and on the geodetic latitude (more later).  The rotational period of the earth is called the "mean sidereal day":
 
-mean sidereal day - 86164.09054 seconds
+mean sidereal day = 86164.09054 seconds
 
-The signal is roughly +/- 1500 nm/s2.  It can have its largest value in the North, East or Vertical direction. And that will change as the earth rotates.  This is the part of the measurement you use to "lock on" to and calibrate your instrument.  The rest of your signal, the "residual" will depend on instrument noise, seismic noise, changes in local gravity because of the varying density of the air near to the station, changes in temperature, changes in magnetic and electric fields, changes from cars and trucks going by,  changes from people in the room, from waves at the beach, and much more.
+The signal is roughly +/- 1500 nm/s2.  It can have its largest value in the North, East or Vertical direction. And that will change as the earth rotates.  This is the part of the measurement you use to "lock on" to and calibrate your instrument.  The rest of your signal, the "residual" will depend on instrument noise, seismic noise, changes in local gravity because of the varying density of the air near to the station, changes in temperature, changes in magnetic and electric fields, changes from cars and trucks going by,  changes from people in the room, from waves at the beach, and much more. It is roughly +/- 50 nm/s2
+
+ResultVector = SunMoonSignalVector + CentrifugalVector
+
+If your instrument has three axes reporting, they will probably be oriented to North, East and Vertical.  You "dot" the ResultVector into the local vertical unit vector to get the vertical part of the signal, dot the ResultVector into the North unit vector to get the North component of the signal, and dot the ResultVector into the East unit vector to get the East component of the signal.
+
+gN = Dot(ResultVector, NorthUnitVector)
+gE = Dot(ResultVector, EastUnitVector)
+gV = Dot(ResultVector, VerticalUnitVector)
+
+These should only require a linear regression (offset and multiplier) for each axis.  If your instrument is not quite lined up with the North and East and Vertical, then you can use add rotations to correct your orientation.  If you instrument location is not quite correct, you can solve for the latitude, longitude and height that best reduces the sum of squares of the residuals from the regressions.
+
+This is only a beginning.  Just a way to push your instrument to where it can detect this large and stable gravitational signal.
